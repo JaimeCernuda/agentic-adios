@@ -22,6 +22,10 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       
+      # Configure OpenTelemetry exporters
+      - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      
       # User info for tracking - MUST be provided by user
       - USER_NAME=${USER_NAME}
       - USER_EMAIL=${USER_EMAIL}
