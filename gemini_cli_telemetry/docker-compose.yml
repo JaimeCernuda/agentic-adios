@@ -1,0 +1,46 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-config.yaml:/etc/otel-collector-config.yaml
+      - ./telemetry-data:/tmp/telemetry-data
+    ports:
+      - "4317:4317"   # gRPC
+      - "4318:4318"   # HTTP
+      - "8888:8888"   # Prometheus metrics
+    networks:
+      - gemini-telemetry
+    # Remove health check since collector container lacks curl/wget/nc
+    # The collector service is ready when logs show "Everything is ready"
+
+  gemini-cli:
+    build: .
+    environment:
+      # OpenTelemetry configuration
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_LOG_LEVEL=debug
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=gemini-cli,service.version=1.0.0
+      - NODE_ENV=development
+      # User identification for telemetry
+      - USER_NAME=${USER_NAME:-Anonymous}
+      - USER_EMAIL=${USER_EMAIL:-anonymous@example.com}
+      # Optional: Only set if using specific authentication method
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY:-}
+      - GOOGLE_GENAI_USE_VERTEXAI=${GOOGLE_GENAI_USE_VERTEXAI:-}
+    volumes:
+      - ./workspace:/home/gemini/workspace
+    working_dir: /home/gemini/workspace
+    depends_on:
+      - otel-collector
+    networks:
+      - gemini-telemetry
+    stdin_open: true
+    tty: true
+    command: ["gemini"]
+
+networks:
+  gemini-telemetry:
+    driver: bridge

@@ -1,0 +1,2 @@
+# Telemetry analysis is now handled by the unified analyzer in ../telemetry_analyzer/
+# This file is kept for reference but the actual analysis should be run from the parent directory

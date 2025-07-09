@@ -1,0 +1,49 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+    send_batch_max_size: 2048
+
+exporters:
+  file:
+    path: /tmp/telemetry-data/traces.jsonl
+    format: json
+  file/logs:
+    path: /tmp/telemetry-data/logs.jsonl
+    format: json
+  file/metrics:
+    path: /tmp/telemetry-data/metrics.jsonl
+    format: json
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [file, debug]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [file/logs, debug]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [file/metrics, debug]
+  
+  telemetry:
+    logs:
+      level: debug
+    metrics:
+      level: detailed

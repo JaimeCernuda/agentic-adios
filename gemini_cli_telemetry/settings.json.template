@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "adios": {
+      "command": "uv",
+      "args": ["--directory", "/home/gemini/scientific-mcps/Adios", "run", "adios-mcp"],
+      "cwd": "/home/gemini/scientific-mcps/Adios",
+      "env": {
+        "PYTHONPATH": "/home/gemini/scientific-mcps/Adios/src"
+      },
+      "timeout": 30000,
+      "trust": false
+    }
+  },
+  "telemetry": {
+    "enabled": true,
+    "target": "local",
+    "endpoint": "http://otel-collector:4317"
+  }
+}
