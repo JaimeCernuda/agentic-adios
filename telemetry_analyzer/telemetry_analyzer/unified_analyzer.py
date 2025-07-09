@@ -317,6 +317,7 @@ class UnifiedTelemetryAnalyzer:
         turn_counter = 0
         
         for event in events:
+            # Handle traditional format (Claude Code)
             if self._is_user_prompt(event):
                 if current_turn:
                     flow.turns.append(current_turn)
@@ -340,6 +341,17 @@ class UnifiedTelemetryAnalyzer:
                 tool_result = self._extract_tool_result(event)
                 if tool_result:
                     current_turn.tool_results.append(tool_result)
+                    
+            # Handle Gemini CLI metrics format
+            elif self._is_gemini_api_request(event) or self._has_gemini_token_usage(event):
+                if not current_turn:
+                    turn_counter += 1
+                    current_turn = ConversationTurn(
+                        turn_id=turn_counter,
+                        agent_type=flow.agent_type,
+                        user_prompt="Gemini CLI conversation turn",
+                        timestamp=event.timestamp
+                    )
                     
             # Extract token usage and costs
             if current_turn:
@@ -382,6 +394,37 @@ class UnifiedTelemetryAnalyzer:
             event.operation_name == 'tool_result' or
             any('result' in log.get('message', '').lower() for log in event.logs)
         )
+        
+    def _is_gemini_api_request(self, event: TelemetryEvent) -> bool:
+        """Check if event represents a Gemini CLI API request"""
+        if event.agent_type != "gemini-cli":
+            return False
+            
+        # Check for API request count metrics
+        resource_metrics = event.raw_data.get('resourceMetrics', [])
+        for resource_metric in resource_metrics:
+            scope_metrics = resource_metric.get('scopeMetrics', [])
+            for scope_metric in scope_metrics:
+                metrics = scope_metric.get('metrics', [])
+                for metric in metrics:
+                    if metric.get('name') == 'gemini_cli.api.request.count':
+                        return True
+        return False
+        
+    def _has_gemini_token_usage(self, event: TelemetryEvent) -> bool:
+        """Check if event contains Gemini CLI token usage"""
+        if event.agent_type != "gemini-cli":
+            return False
+            
+        resource_metrics = event.raw_data.get('resourceMetrics', [])
+        for resource_metric in resource_metrics:
+            scope_metrics = resource_metric.get('scopeMetrics', [])
+            for scope_metric in scope_metrics:
+                metrics = scope_metric.get('metrics', [])
+                for metric in metrics:
+                    if metric.get('name') == 'gemini_cli.token.usage':
+                        return True
+        return False
         
     def _extract_user_prompt(self, event: TelemetryEvent) -> Optional[str]:
         """Extract user prompt from event"""
@@ -445,14 +488,57 @@ class UnifiedTelemetryAnalyzer:
                 
         return tool_result
         
+    def _extract_gemini_cli_tokens(self, raw_data: Dict[str, Any]) -> Dict[str, int]:
+        """Extract token usage from Gemini CLI OpenTelemetry metrics format"""
+        token_usage = {}
+        
+        # Navigate through OpenTelemetry metrics structure
+        resource_metrics = raw_data.get('resourceMetrics', [])
+        for resource_metric in resource_metrics:
+            scope_metrics = resource_metric.get('scopeMetrics', [])
+            for scope_metric in scope_metrics:
+                metrics = scope_metric.get('metrics', [])
+                for metric in metrics:
+                    metric_name = metric.get('name', '')
+                    if metric_name == 'gemini_cli.token.usage':
+                        # Extract token data from sum.dataPoints
+                        sum_data = metric.get('sum', {})
+                        data_points = sum_data.get('dataPoints', [])
+                        for data_point in data_points:
+                            # Extract token type from attributes
+                            attributes = data_point.get('attributes', [])
+                            token_type = None
+                            for attr in attributes:
+                                if attr.get('key') == 'type':
+                                    value = attr.get('value', {})
+                                    token_type = value.get('stringValue')
+                                    break
+                            
+                            # Extract token count
+                            token_count = data_point.get('asInt', 0)
+                            if isinstance(token_count, str):
+                                token_count = int(token_count)
+                            
+                            if token_type and token_count > 0:
+                                token_usage[token_type] = token_count
+        
+        return token_usage
+        
     def _update_token_usage(self, turn: ConversationTurn, event: TelemetryEvent) -> None:
         """Update token usage information for a turn"""
+        # Handle Claude Code format
         if 'tokens.input' in event.attributes:
             turn.token_usage['input'] = event.attributes['tokens.input']
         if 'tokens.output' in event.attributes:
             turn.token_usage['output'] = event.attributes['tokens.output']
         if 'tokens.total' in event.attributes:
             turn.token_usage['total'] = event.attributes['tokens.total']
+            
+        # Handle Gemini CLI OpenTelemetry metrics format
+        if event.agent_type == "gemini-cli":
+            gemini_tokens = self._extract_gemini_cli_tokens(event.raw_data)
+            for token_type, count in gemini_tokens.items():
+                turn.token_usage[token_type] = turn.token_usage.get(token_type, 0) + count
             
     def _calculate_flow_statistics(self, flow: ConversationFlow) -> None:
         """Calculate statistics for a conversation flow"""
@@ -479,6 +565,10 @@ class UnifiedTelemetryAnalyzer:
                 flow.total_cost += turn.token_usage['input'] * 0.00001  # $0.01 per 1k tokens
             if turn.token_usage.get('output'):
                 flow.total_cost += turn.token_usage['output'] * 0.00003  # $0.03 per 1k tokens
+                
+        # Calculate total tokens
+        total_tokens = sum(flow.total_tokens.values())
+        flow.total_tokens['total'] = total_tokens
                 
     def generate_report(self) -> str:
         """Generate a comprehensive unified markdown report"""

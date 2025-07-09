@@ -1,14 +1,14 @@
 # 📊 AI Agent Telemetry Analysis Report
 
-Generated: 2025-07-09 16:56:02
+Generated: 2025-07-09 17:07:54
 
 ## 📈 Summary Statistics
 
 ### ✨ Gemini Cli
 - **Sessions**: 1
-- **Conversation Turns**: 0
-- **Total Tokens**: 0
-- **Estimated Cost**: $0.0000
+- **Conversation Turns**: 1
+- **Total Tokens**: 1,045,666
+- **Estimated Cost**: $10.4430
 
 ## 💬 Session Details
 
@@ -18,10 +18,16 @@ Generated: 2025-07-09 16:56:02
 
 - **Session ID**: `gemini-c...`
 - **User**: Unknown User (unknown@example.com)
-- **Duration**: 21:56:02 - 21:56:02
-- **Turns**: 0
-- **Tokens**: 0
-- **Cost**: $0.0000
+- **Duration**: 22:07:54 - 22:07:54
+- **Turns**: 1
+- **Tokens**: 1,045,666
+- **Cost**: $10.4430
 - **Tools Used**: None
+
+##### 🔄 Conversation Flow
+
+**Turn 1** (22:07:54)
+- 👤 **User**: Gemini CLI conversation turn
+- 📊 **Tokens**: {'input': 1034614, 'output': 3230, 'thought': 7822}
 
 ---
