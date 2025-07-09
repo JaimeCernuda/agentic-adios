@@ -27,9 +27,8 @@ RUN apt-get update && apt-get install -y bc && rm -rf /var/lib/apt/lists/*
 COPY mock-claude.sh /usr/local/bin/claude
 RUN chmod +x /usr/local/bin/claude
 
-# Create workspace directory (not in home)
+# Create workspace directory and set proper permissions
 RUN mkdir -p /workspace && chmod 755 /workspace
-WORKDIR /workspace
 
 # Copy all necessary scripts
 COPY entrypoint.sh session-wrapper.sh telemetry-wrapper.sh shutdown-export.sh export-telemetry.sh lifecycle-export.sh /usr/local/bin/
@@ -68,7 +67,8 @@ ENV TELEMETRY_DIR=/telemetry
 ENV LOGS_DIR=/logs
 ENV EXPORTED_DATA_DIR=/exported-data
 
-WORKDIR /workspace
+# Set working directory to /home/claude-user to avoid mount namespace issues
+WORKDIR /home/claude-user
 
 # Direct entrypoint to claude with dangerous mode
 ENTRYPOINT ["/usr/local/bin/telemetry-wrapper.sh", "claude", "--dangerously-skip-permissions"]

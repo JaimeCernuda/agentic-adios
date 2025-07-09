@@ -22,23 +22,34 @@ export SESSION_ID="session-$(date +%Y%m%d-%H%M%S)"
 # Change to script directory
 cd "$(dirname "$0")"
 
+# Clean up any existing containers
+echo "Cleaning up existing containers..."
+docker-compose down 2>/dev/null || true
+docker container rm -f claude-code-adios 2>/dev/null || true
+
 # Build and start containers
+echo "Building and starting containers..."
 docker-compose up -d
 
 # Wait for containers to be ready
 echo "Waiting for services to start..."
 sleep 5
 
-# Connect to Claude
+# Connect to Claude - it should start automatically
 echo "Connecting to Claude Code..."
+echo "Claude will start automatically in dangerous mode."
 echo "Type 'exit' when done to automatically export telemetry data."
 echo ""
-docker exec -it claude-code-adios /bin/bash -c 'exec "$@"' -- "$@"
+docker exec -it claude-code-adios /bin/bash
 
 # Export telemetry after exit
 echo ""
 echo "Exporting telemetry data..."
-docker exec claude-code-adios /usr/local/bin/lifecycle-export.sh
+docker exec claude-code-adios /usr/local/bin/lifecycle-export.sh 2>/dev/null || echo "Export may have already completed"
+
+# Clean up
+echo "Cleaning up containers..."
+docker-compose down
 
 # Show export location
 echo ""
