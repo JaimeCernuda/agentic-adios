@@ -48,5 +48,5 @@ ENV CLAUDE_CODE_ENABLE_TELEMETRY=1
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
 ENV OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 
-# Keep container running
-CMD ["tail", "-f", "/dev/null"]
+# Set Claude as the entrypoint
+ENTRYPOINT ["claude"]
