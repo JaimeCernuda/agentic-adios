@@ -37,10 +37,10 @@ sleep 5
 
 # Connect to Claude - it should start automatically
 echo "Connecting to Claude Code..."
-echo "Claude will start automatically in dangerous mode."
-echo "Type 'exit' when done to automatically export telemetry data."
+echo "Claude should start automatically in dangerous mode."
+echo "Use Ctrl+C to exit when done."
 echo ""
-docker exec -it claude-code-adios /bin/bash
+docker attach claude-code-adios
 
 # Export telemetry after exit
 echo ""

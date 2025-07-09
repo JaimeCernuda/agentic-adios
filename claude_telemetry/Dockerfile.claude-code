@@ -23,9 +23,8 @@ RUN useradd -m -s /bin/bash claude-user && \
 # Install bc for calculations
 RUN apt-get update && apt-get install -y bc && rm -rf /var/lib/apt/lists/*
 
-# Copy mock Claude Code for testing
-COPY mock-claude.sh /usr/local/bin/claude
-RUN chmod +x /usr/local/bin/claude
+# Install Claude Code (real version)
+RUN curl -fsSL https://claude.ai/claude-code/install.sh | sh
 
 # Create workspace directory and set proper permissions
 RUN mkdir -p /workspace && chmod 755 /workspace
@@ -40,9 +39,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/session-wrapper.sh \
 RUN mkdir -p /telemetry /logs /exported-data && \
     chown -R claude-user:claude-user /workspace /telemetry /logs /exported-data
 
-# Configure MCP for Adios
-RUN mkdir -p /home/claude-user/.claudecode && \
-    echo '{"mcpServers": {"adios": {"command": "npx", "args": ["-y", "@adios-ai/server"], "env": {}}}}' > /home/claude-user/.claudecode/settings.json && \
+# Configure MCP for Adios  
+RUN mkdir -p /home/claude-user/.claude && \
+    echo '{"mcpServers": {"adios": {"command": "npx", "args": ["-y", "@adios-ai/server"], "env": {}}}}' > /home/claude-user/.claude/settings.json && \
     chown -R claude-user:claude-user /home/claude-user
 
 # Mock Adios MCP server setup (for testing)
