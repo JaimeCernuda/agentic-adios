@@ -31,6 +31,14 @@ services:
       - OTEL_METRIC_EXPORT_INTERVAL=10000
       - OTEL_LOGS_EXPORT_INTERVAL=5000
       
+      # Enable full prompt logging (shows actual conversation content)
+      - OTEL_LOG_USER_PROMPTS=1
+      
+      # Enhanced logging configuration
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_LOGS_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_LOGS_ENDPOINT=http://otel-collector:4317
+      
       # User info for tracking - MUST be provided by user
       - USER_NAME=${USER_NAME}
       - USER_EMAIL=${USER_EMAIL}
@@ -42,9 +50,5 @@ services:
     stdin_open: true
     tty: true
     
-    # Lifecycle hooks for telemetry export
+    # Graceful shutdown
     stop_grace_period: 10s
-    
-    # Post-stop hook to export telemetry
-    labels:
-      - "com.docker.compose.project.lifecycle.post_stop=/usr/local/bin/export-telemetry.sh"
