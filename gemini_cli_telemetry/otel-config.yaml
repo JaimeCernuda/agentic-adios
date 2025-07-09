@@ -16,12 +16,24 @@ exporters:
   file:
     path: /tmp/telemetry-data/traces.jsonl
     format: json
+    rotation:
+      max_megabytes: 100
+      max_days: 7
+      max_backups: 10
   file/logs:
     path: /tmp/telemetry-data/logs.jsonl
     format: json
+    rotation:
+      max_megabytes: 100
+      max_days: 7
+      max_backups: 10
   file/metrics:
     path: /tmp/telemetry-data/metrics.jsonl
     format: json
+    rotation:
+      max_megabytes: 100
+      max_days: 7
+      max_backups: 10
   debug:
     verbosity: detailed
     sampling_initial: 5

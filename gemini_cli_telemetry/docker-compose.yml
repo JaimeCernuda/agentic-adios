@@ -11,6 +11,8 @@ services:
       - "8888:8888"   # Prometheus metrics
     networks:
       - gemini-telemetry
+    # Run as user 1000:1000 to match typical Linux user permissions
+    user: "1000:1000"
     # Remove health check since collector container lacks curl/wget/nc
     # The collector service is ready when logs show "Everything is ready"
 
@@ -39,7 +41,7 @@ services:
       - gemini-telemetry
     stdin_open: true
     tty: true
-    command: ["gemini"]
+    # Use the default CMD from Dockerfile which has telemetry enabled
 
 networks:
   gemini-telemetry:

@@ -21,7 +21,7 @@ Copy the key to a safe space
 
 ```bash
 cd gemini_cli_telemetry
-export USER_NAME="Your Name" && export USER_EMAIL="your.email@example.com" && export  GEMINI_API_KEY="xxxxxxxxxxxxx" & docker-compose run --rm gemini-cli > telemetry-startup.log
+export USER_NAME="Your Name" && export USER_EMAIL="your.email@example.com" && export GEMINI_API_KEY="xxxxxxxxxxxxx" && docker-compose run --rm gemini-cli
 ```
 
 ## Analysis
