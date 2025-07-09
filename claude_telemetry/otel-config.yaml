@@ -19,22 +19,22 @@ exporters:
     path: /telemetry/claude-telemetry.jsonl
     format: json
   
-  logging:
-    loglevel: debug
+  debug:
+    verbosity: detailed
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [file, logging]
+      exporters: [file, debug]
     
     metrics:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [file, logging]
+      exporters: [file, debug]
     
     logs:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [file, logging]
+      exporters: [file, debug]
