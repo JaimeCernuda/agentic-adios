@@ -4,18 +4,20 @@ This repository contains Docker setups for various AI coding agents with scienti
 
 ## Available Setups
 
-### 1. Claude Code with ADIOS MCP
-Located in the root directory. Provides Claude Code with the ADIOS MCP for scientific computing.
+### 1. Claude Code with Telemetry
+Located in `claude_telemetry/`. Provides Claude Code with comprehensive telemetry collection and ADIOS MCP integration.
 
 **Features:**
-- Claude Code AI assistant
+- Claude Code AI assistant with telemetry tracking
+- OpenTelemetry-based metrics collection
 - ADIOS MCP for scientific data processing
-- Python environment with uv package management
+- Session analysis and cost tracking
 
 **Usage:**
 ```bash
+cd claude_telemetry
 docker-compose up -d
-docker exec -it claude_code claude
+docker exec -it claude-code-adios claude --dangerously-skip-permissions
 ```
 
 ### 2. OpenCode with Ollama
@@ -76,37 +78,13 @@ All setups include:
 ```
 .
 ├── README.md                        # This file
-├── Dockerfile.claude-code           # Claude Code Docker setup
-├── docker-compose.yml               # Main compose file with telemetry
-├── otel-collector-config.yaml       # OpenTelemetry collector configuration
-├── prometheus.yml                   # Prometheus configuration
-├── entrypoint.sh                   # Container entrypoint script
-├── mock-claude.sh                  # Mock Claude CLI for testing
-├── session-wrapper.sh              # Session management wrapper
-├── setup.sh                        # Initial setup script
-├── shutdown-export.sh              # Shutdown and export script
-├── create-full-test-tar.sh         # Test archive creation script
 ├── USER-INSTRUCTIONS.md            # User instructions documentation
 ├── complete_implementation_guide.md # Implementation guide
-├── claude_telemetry/               # All telemetry-related files
-│   ├── analyze-telemetry.py        # Telemetry analysis script
-│   ├── export-telemetry.sh         # Export telemetry data
-│   ├── export-traces.sh            # Export traces
-│   ├── telemetry-wrapper.sh        # Telemetry wrapper script
-│   ├── test-telemetry.sh           # Test telemetry system
-│   ├── telemetry-data/             # Telemetry data storage
-│   ├── session-logs/               # Session logs storage
-│   ├── exported-data/              # Exported data storage
-│   ├── claude-telemetry-*.tar.gz   # Telemetry archives
-│   ├── *_analysis.md               # Analysis reports
-│   ├── claude-telemetry-analyzer/  # Python telemetry analyzer package
-│   │   ├── src/                    # Source code
-│   │   ├── pyproject.toml          # Python project configuration
-│   │   └── README.md               # Analyzer documentation
-│   └── telemetry_examples/         # Example telemetry data
-│       └── claude-telemetry-Test-User-20250708-150316/
-├── claude/                         # Claude-specific files
-│   └── Dockerfile.dangerous        # Dangerous Dockerfile example
+├── claude_telemetry/               # Claude Code with telemetry setup
+│   ├── Dockerfile.claude-code      # Docker image
+│   ├── docker-compose.yml          # Compose configuration
+│   ├── README.md                   # Setup documentation
+│   └── ... (telemetry scripts and tools)
 ├── opencoder-ollama/               # OpenCode + Ollama setup
 │   ├── Dockerfile
 │   ├── docker-compose.yml          # GPU-enabled version
