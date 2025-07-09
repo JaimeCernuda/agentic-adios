@@ -19,6 +19,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # Install uv (Python package manager)
 RUN pip3 install uv
 
+# Install Claude Code as root (needs global permissions)
+RUN npm install -g @anthropic-ai/claude-code
+
 # Create claude-user with sudo privileges
 RUN useradd -m -s /bin/bash claude-user && \
     echo "claude-user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
@@ -27,9 +30,6 @@ RUN useradd -m -s /bin/bash claude-user && \
 # Switch to claude-user
 USER claude-user
 WORKDIR /home/claude-user
-
-# Install Claude Code
-RUN npm install -g @anthropic-ai/claude-code
 
 # Clone and install ADIOS MCP
 RUN git clone https://github.com/iowarp/scientific-mcps.git && \
