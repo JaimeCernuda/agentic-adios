@@ -41,7 +41,7 @@ RUN mkdir -p /home/claude-user/workspace
 
 # Switch to workspace and add MCP with correct command
 WORKDIR /home/claude-user/workspace
-RUN claude mcp add adios-server uv run adios-mcp
+RUN claude mcp add adios -- uv --directory /home/claude-user/scientific-mcps/Adios run adios-mcp
 
 # Set environment variables for telemetry
 ENV CLAUDE_CODE_ENABLE_TELEMETRY=1
