@@ -18,7 +18,7 @@ Located in `claude_telemetry/`. Provides Claude Code with comprehensive telemetr
 cd claude_telemetry
 export USER_NAME="Your Name" USER_EMAIL="your.email@company.com"
 docker-compose up -d
-docker attach claude-code-adios
+docker exec -it claude-code-adios bash
 
 # Analyze telemetry after use:
 cd ../claude-telemetry-analyzer

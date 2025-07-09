@@ -51,7 +51,7 @@ services:
       - otel-collector
     stdin_open: true
     tty: true
-    # Direct entrypoint already set in Dockerfile
+    # Keep container running for interactive access
     
     # Lifecycle hooks for automatic telemetry export
     labels:
