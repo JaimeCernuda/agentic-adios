@@ -19,6 +19,10 @@ cd claude_telemetry
 export USER_NAME="Your Name"
 export USER_EMAIL="your.email@company.com"
 ./run-claude.sh
+
+# Analyze telemetry after use:
+cd ../claude-telemetry-analyzer
+uv run claude-telemetry-analyzer analyze ../claude_telemetry/exported-data/claude-telemetry-*.tar.gz
 ```
 
 ### 2. OpenCode with Ollama
@@ -82,10 +86,13 @@ All setups include:
 ├── USER-INSTRUCTIONS.md            # User instructions documentation
 ├── complete_implementation_guide.md # Implementation guide
 ├── claude_telemetry/               # Claude Code with telemetry setup
+│   ├── run-claude.sh               # Run script (just export vars and run this)
+│   ├── docker-compose.yml          # Docker configuration
 │   ├── Dockerfile.claude-code      # Docker image
-│   ├── docker-compose.yml          # Compose configuration
-│   ├── README.md                   # Setup documentation
-│   └── ... (telemetry scripts and tools)
+│   └── ... (minimal telemetry scripts)
+├── claude-telemetry-analyzer/      # Telemetry analysis tools
+│   ├── README.md                   # Analysis documentation
+│   └── ... (analysis package)
 ├── opencoder-ollama/               # OpenCode + Ollama setup
 │   ├── Dockerfile
 │   ├── docker-compose.yml          # GPU-enabled version

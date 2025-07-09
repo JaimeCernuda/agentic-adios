@@ -29,11 +29,10 @@ RUN curl -fsSL https://claude.ai/claude-code/install.sh | sh
 # Create workspace directory and set proper permissions
 RUN mkdir -p /workspace && chmod 755 /workspace
 
-# Copy all necessary scripts
-COPY entrypoint.sh session-wrapper.sh telemetry-wrapper.sh shutdown-export.sh export-telemetry.sh lifecycle-export.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/session-wrapper.sh \
-    /usr/local/bin/telemetry-wrapper.sh /usr/local/bin/shutdown-export.sh \
-    /usr/local/bin/export-telemetry.sh /usr/local/bin/lifecycle-export.sh
+# Copy necessary scripts
+COPY telemetry-wrapper.sh shutdown-export.sh export-telemetry.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/telemetry-wrapper.sh /usr/local/bin/shutdown-export.sh \
+    /usr/local/bin/export-telemetry.sh
 
 # Create necessary directories
 RUN mkdir -p /telemetry /logs /exported-data && \
@@ -49,9 +48,7 @@ RUN mkdir -p /home/claude-user/.npm && \
     echo "Adios MCP server would be installed here" > /home/claude-user/.npm/adios-info.txt && \
     chown -R claude-user:claude-user /home/claude-user/.npm
 
-# Copy test scripts
-COPY test-telemetry.sh analyze-telemetry.py create-full-test-tar.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/test-telemetry.sh /usr/local/bin/create-full-test-tar.sh
+# No test scripts needed
 
 USER claude-user
 
