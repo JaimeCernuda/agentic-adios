@@ -20,7 +20,7 @@ exporters:
     format: json
   
   logging:
-    loglevel: info
+    loglevel: debug
 
 service:
   pipelines:

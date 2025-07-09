@@ -26,6 +26,10 @@ services:
       - OTEL_METRICS_EXPORTER=otlp
       - OTEL_LOGS_EXPORTER=otlp
       
+      # Set shorter intervals for debugging
+      - OTEL_METRIC_EXPORT_INTERVAL=10000
+      - OTEL_LOGS_EXPORT_INTERVAL=5000
+      
       # User info for tracking - MUST be provided by user
       - USER_NAME=${USER_NAME}
       - USER_EMAIL=${USER_EMAIL}
