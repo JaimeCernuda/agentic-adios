@@ -1,5 +1,0 @@
-{"timestamp":"2024-01-08T14:30:00Z","metric":"claude_code.session.count","value":1,"attributes":{"user":"Test User","email":"test@company.com"}}
-{"timestamp":"2024-01-08T14:30:15Z","metric":"claude_code.token.usage","value":250,"attributes":{"type":"input"}}
-{"timestamp":"2024-01-08T14:30:16Z","metric":"claude_code.token.usage","value":150,"attributes":{"type":"output"}}
-{"timestamp":"2024-01-08T14:30:17Z","metric":"claude_code.cost.usage","value":0.012,"attributes":{"currency":"USD"}}
-{"timestamp":"2024-01-08T14:30:20Z","metric":"mcp.interaction","value":1,"attributes":{"server":"adios","command":"file_analysis"}}

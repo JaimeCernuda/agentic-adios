@@ -1,9 +1,0 @@
-{
-  "session_id": "session-test-123",
-  "user_name": "Test User",
-  "user_email": "test@company.com",
-  "start_time": "2024-01-08T14:30:00Z",
-  "end_time": "2024-01-08T14:35:00Z",
-  "workspace": "/workspace",
-  "mcp_servers": ["adios"]
-}

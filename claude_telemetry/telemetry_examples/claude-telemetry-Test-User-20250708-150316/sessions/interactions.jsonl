@@ -1,5 +1,0 @@
-{"timestamp":"2024-01-08T14:30:00Z","session_id":"session-test-123","event":"session_start","data":{"user":"Test User","email":"test@company.com"}}
-{"timestamp":"2024-01-08T14:30:15Z","session_id":"session-test-123","event":"ai_activity","data":"Processing query: How can I analyze my data files?"}
-{"timestamp":"2024-01-08T14:30:20Z","session_id":"session-test-123","event":"ai_activity","data":"MCP: Executing file_analysis with Adios server"}
-{"timestamp":"2024-01-08T14:32:00Z","session_id":"session-test-123","event":"ai_activity","data":"MCP: Executing list_files with Adios server"}
-{"timestamp":"2024-01-08T14:35:00Z","session_id":"session-test-123","event":"session_end","data":{"exit_code":0}}

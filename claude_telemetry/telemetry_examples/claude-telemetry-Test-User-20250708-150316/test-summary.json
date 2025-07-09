@@ -1,9 +1,0 @@
-{
-  "export_type": "test_run",
-  "export_timestamp": "2025-07-08T15:03:16-05:00",
-  "user_name": "Test User",
-  "user_email": "test@company.com",
-  "session_count": 1,
-  "total_size": "28K",
-  "test_mode": true
-}
