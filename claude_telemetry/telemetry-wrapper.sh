@@ -1,5 +1,15 @@
 #!/bin/bash
-# Wrapper to capture all Claude Code interactions
+# Wrapper to capture all Claude Code interactions and handle lifecycle
+
+# Generate session ID if not provided
+export SESSION_ID="${SESSION_ID:-session-$(date +%Y%m%d-%H%M%S)}"
+
+# Set user info from environment variables
+export USER_NAME="${USER_NAME:-Unknown User}"
+export USER_EMAIL="${USER_EMAIL:-unknown@example.com}"
+
+# Create session directories
+mkdir -p "/logs/${SESSION_ID}" "/telemetry/${SESSION_ID}"
 
 # Create a detailed interaction log
 INTERACTION_LOG="/logs/${SESSION_ID}/interactions.jsonl"
@@ -32,5 +42,8 @@ EXIT_CODE=${PIPESTATUS[0]}
 
 # Log session end
 log_interaction "session_end" "{\"exit_code\":${EXIT_CODE}}"
+
+# Trigger export on exit (will be called by lifecycle hook)
+echo "Session ${SESSION_ID} completed with exit code ${EXIT_CODE}"
 
 exit $EXIT_CODE

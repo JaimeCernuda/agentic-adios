@@ -16,8 +16,9 @@ Located in `claude_telemetry/`. Provides Claude Code with comprehensive telemetr
 **Usage:**
 ```bash
 cd claude_telemetry
-docker-compose up -d
-docker exec -it claude-code-adios claude --dangerously-skip-permissions
+export USER_NAME="Your Name"
+export USER_EMAIL="your.email@company.com"
+./run-claude.sh
 ```
 
 ### 2. OpenCode with Ollama

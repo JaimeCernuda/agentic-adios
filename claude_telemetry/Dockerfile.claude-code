@@ -15,9 +15,10 @@ RUN apt-get update && apt-get install -y \
     jq \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user for Claude Code
-RUN useradd -m -s /bin/bash claudecode && \
-    echo "claudecode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+# Create a user with sudo privileges
+RUN useradd -m -s /bin/bash claude-user && \
+    echo "claude-user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    usermod -aG sudo claude-user
 
 # Install bc for calculations
 RUN apt-get update && apt-get install -y bc && rm -rf /var/lib/apt/lists/*
@@ -26,38 +27,48 @@ RUN apt-get update && apt-get install -y bc && rm -rf /var/lib/apt/lists/*
 COPY mock-claude.sh /usr/local/bin/claude
 RUN chmod +x /usr/local/bin/claude
 
-# Create app directory
-WORKDIR /app
+# Create workspace directory (not in home)
+RUN mkdir -p /workspace && chmod 755 /workspace
+WORKDIR /workspace
 
-# Copy telemetry collection scripts
-COPY entrypoint.sh /app/entrypoint.sh
-COPY session-wrapper.sh /usr/local/bin/session-wrapper
-COPY telemetry-wrapper.sh /usr/local/bin/telemetry-wrapper
-COPY shutdown-export.sh /app/shutdown-export.sh
-RUN chmod +x /app/entrypoint.sh /usr/local/bin/session-wrapper /usr/local/bin/telemetry-wrapper /app/shutdown-export.sh
+# Copy all necessary scripts
+COPY entrypoint.sh session-wrapper.sh telemetry-wrapper.sh shutdown-export.sh export-telemetry.sh lifecycle-export.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/session-wrapper.sh \
+    /usr/local/bin/telemetry-wrapper.sh /usr/local/bin/shutdown-export.sh \
+    /usr/local/bin/export-telemetry.sh /usr/local/bin/lifecycle-export.sh
 
 # Create necessary directories
-RUN mkdir -p /workspace /telemetry /logs && \
-    chown -R claudecode:claudecode /workspace /telemetry /logs
+RUN mkdir -p /telemetry /logs /exported-data && \
+    chown -R claude-user:claude-user /workspace /telemetry /logs /exported-data
 
 # Configure MCP for Adios
-RUN mkdir -p /home/claudecode/.claudecode && \
-    echo '{"mcpServers": {"adios": {"command": "npx", "args": ["-y", "@adios-ai/server"], "env": {}}}}' > /home/claudecode/.claudecode/settings.json && \
-    chown -R claudecode:claudecode /home/claudecode
+RUN mkdir -p /home/claude-user/.claudecode && \
+    echo '{"mcpServers": {"adios": {"command": "npx", "args": ["-y", "@adios-ai/server"], "env": {}}}}' > /home/claude-user/.claudecode/settings.json && \
+    chown -R claude-user:claude-user /home/claude-user
 
 # Mock Adios MCP server setup (for testing)
-RUN mkdir -p /home/claudecode/.npm && \
-    echo "Adios MCP server would be installed here" > /home/claudecode/.npm/adios-info.txt && \
-    chown -R claudecode:claudecode /home/claudecode/.npm
+RUN mkdir -p /home/claude-user/.npm && \
+    echo "Adios MCP server would be installed here" > /home/claude-user/.npm/adios-info.txt && \
+    chown -R claude-user:claude-user /home/claude-user/.npm
 
-USER claudecode
+# Copy test scripts
+COPY test-telemetry.sh analyze-telemetry.py create-full-test-tar.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/test-telemetry.sh /usr/local/bin/create-full-test-tar.sh
+
+USER claude-user
 
 # Set up environment for telemetry
 ENV CLAUDE_CODE_ENABLE_TELEMETRY=1
 ENV OTEL_SERVICE_NAME=claude-code
 ENV OTEL_RESOURCE_ATTRIBUTES="service.name=claude-code,deployment.environment=company-exploration"
-ENV PATH="/home/claudecode/.local/bin:${PATH}"
+ENV PATH="/home/claude-user/.local/bin:${PATH}"
+
+# Set telemetry environment variables
+ENV TELEMETRY_DIR=/telemetry
+ENV LOGS_DIR=/logs
+ENV EXPORTED_DATA_DIR=/exported-data
 
 WORKDIR /workspace
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Direct entrypoint to claude with dangerous mode
+ENTRYPOINT ["/usr/local/bin/telemetry-wrapper.sh", "claude", "--dangerously-skip-permissions"]
