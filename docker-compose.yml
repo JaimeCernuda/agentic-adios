@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # OpenTelemetry Collector for telemetry collection only (no visualization)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./telemetry-data:/telemetry
+    ports:
+      - "4317:4317"   # OTLP gRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+
+  # Claude Code container with Adios MCP
+  claude-code:
+    build:
+      context: .
+      dockerfile: Dockerfile.claude-code
+    container_name: claude-code-adios
+    environment:
+      # Enable telemetry collection
+      - CLAUDE_CODE_ENABLE_TELEMETRY=1
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_METRIC_EXPORT_INTERVAL=5000  # 5 seconds for detailed capture
+      
+      # Include all attributes for comprehensive tracking
+      - OTEL_METRICS_INCLUDE_SESSION_ID=true
+      - OTEL_METRICS_INCLUDE_VERSION=true
+      - OTEL_METRICS_INCLUDE_ACCOUNT_UUID=true
+      
+      # Run Claude Code with dangerous flag for immediate interface
+      - CLAUDE_CODE_DANGEROUS=true
+      
+      # User info for tracking
+      - USER_EMAIL=${USER_EMAIL:-user@company.com}
+      - USER_NAME=${USER_NAME:-Company User}
+    volumes:
+      # Mount user's working directory
+      - ${WORKSPACE_DIR:-./workspace}:/workspace
+      - ./telemetry-data:/telemetry
+      - ./session-logs:/logs
+      # Mount workspace for automatic export output
+      - ./exported-data:/workspace/exported-data
+    working_dir: /workspace
+    depends_on:
+      - otel-collector
+    stdin_open: true
+    tty: true
+    command: ["claude", "--dangerously-skip-permissions"]
+
+volumes:
+  telemetry-data:
+  session-logs:

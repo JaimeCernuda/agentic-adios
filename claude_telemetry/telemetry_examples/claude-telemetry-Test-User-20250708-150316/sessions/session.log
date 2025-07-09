@@ -1,0 +1,32 @@
+=============================================
+  Welcome to Claude Code with Adios MCP
+=============================================
+
+User: Test User (test@company.com)
+Session: session-test-123
+Workspace: /workspace
+
+The Adios MCP server is pre-configured and ready to use.
+All your interactions are being recorded for analysis.
+
+Starting Claude Code...
+=============================================
+
+claude> query How can I analyze my data files?
+Processing query: How can I analyze my data files?
+Claude: Here's my response to 'How can I analyze my data files?'
+This is a simulated response that would help with your Adios files.
+MCP: Executing file_analysis with Adios server
+MCP: Response from Adios server for file_analysis
+
+claude> mcp list_files
+MCP: Executing list_files with Adios server
+MCP: Response from Adios server for list_files
+
+claude> exit
+Goodbye!
+
+=== Claude Code Session Ended ===
+Timestamp: 2024-01-08T14:35:00Z
+Session duration: 300 seconds
+Exit code: 0
