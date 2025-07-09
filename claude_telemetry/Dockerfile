@@ -33,8 +33,8 @@ WORKDIR /home/claude-user
 
 # Clone and install ADIOS MCP
 RUN git clone https://github.com/iowarp/scientific-mcps.git && \
-    cd scientific-mcps && \
-    uv pip install "git+https://github.com/iowarp/scientific-mcps.git@main#subdirectory=Adios"
+    cd scientific-mcps/Adios && \
+    uv sync
 
 # Create workspace directory
 RUN mkdir -p /home/claude-user/workspace
