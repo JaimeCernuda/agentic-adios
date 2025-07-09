@@ -48,5 +48,5 @@ ENV CLAUDE_CODE_ENABLE_TELEMETRY=1
 ENV OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
 ENV OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 
-# Set Claude as the entrypoint
-ENTRYPOINT ["claude"]
+# Set Claude as the entrypoint with dangerous mode
+ENTRYPOINT ["claude", "--dangerously-skip-permissions"]
