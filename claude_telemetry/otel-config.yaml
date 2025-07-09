@@ -13,6 +13,7 @@ processors:
   
   memory_limiter:
     limit_mib: 512
+    check_interval: 1s
 
 exporters:
   file:

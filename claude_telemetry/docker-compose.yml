@@ -40,3 +40,10 @@ services:
       - otel-collector
     stdin_open: true
     tty: true
+    
+    # Lifecycle hooks for telemetry export
+    stop_grace_period: 10s
+    
+    # Post-stop hook to export telemetry
+    labels:
+      - "com.docker.compose.project.lifecycle.post_stop=/usr/local/bin/export-telemetry.sh"

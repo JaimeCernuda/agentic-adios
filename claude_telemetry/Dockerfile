@@ -22,6 +22,10 @@ RUN pip3 install uv
 # Install Claude Code as root (needs global permissions)
 RUN npm install -g @anthropic-ai/claude-code
 
+# Copy export script
+COPY export-telemetry.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/export-telemetry.sh
+
 # Create claude-user with sudo privileges
 RUN useradd -m -s /bin/bash claude-user && \
     echo "claude-user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
