@@ -31,17 +31,17 @@ WORKDIR /home/claude-user
 # Install Claude Code
 RUN npm install -g @anthropic-ai/claude-code
 
-# Clone and build ADIOS MCP
+# Clone and install ADIOS MCP
 RUN git clone https://github.com/iowarp/scientific-mcps.git && \
     cd scientific-mcps && \
-    uv sync
+    uv pip install "git+https://github.com/iowarp/scientific-mcps.git@main#subdirectory=Adios"
 
 # Create workspace directory
 RUN mkdir -p /home/claude-user/workspace
 
-# Switch to workspace and add MCP
+# Switch to workspace and add MCP with correct command
 WORKDIR /home/claude-user/workspace
-RUN claude mcp add /home/claude-user/scientific-mcps/adios-server
+RUN claude mcp add adios-server uv run adios-mcp
 
 # Set environment variables for telemetry
 ENV CLAUDE_CODE_ENABLE_TELEMETRY=1
